@@ -1,0 +1,95 @@
+-- =========================
+-- SQL 실습 정리 (변형 버전)
+-- =========================
+
+-- 1. 데이터 복사 (INSERT + SELECT)
+INSERT INTO sample600
+SELECT * FROM sample601;
+
+-- 2. EXISTS 활용 (존재하는 경우)
+UPDATE sample610
+SET flag = 'Y'
+WHERE EXISTS (
+    SELECT 1
+    FROM sample611
+    WHERE sample611.ref_no = sample610.no
+);
+
+-- 3. NOT EXISTS 활용 (존재하지 않는 경우)
+UPDATE sample610
+SET flag = 'N'
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM sample611
+    WHERE sample611.ref_no = sample610.no
+);
+
+-- 4. IN 조건 (직접 값)
+SELECT *
+FROM sample610
+WHERE no IN (2, 4, 6);
+
+-- 5. IN + 서브쿼리
+SELECT *
+FROM sample610
+WHERE no IN (
+    SELECT ref_no
+    FROM sample611
+);
+
+-- 6. 테이블 생성
+CREATE TABLE sample620 (
+    id INTEGER NOT NULL,
+    name VARCHAR(30),
+    created DATE
+);
+
+-- 7. 컬럼 추가
+ALTER TABLE sample620
+ADD extra_col INTEGER;
+
+-- 8. 컬럼 타입 변경
+ALTER TABLE sample620
+MODIFY extra_col VARCHAR(20);
+
+-- 9. 컬럼 삭제
+ALTER TABLE sample620
+DROP extra_col;
+
+-- 10. 복합키 설정 테이블
+CREATE TABLE sample630 (
+    main_id INTEGER NOT NULL,
+    sub_id INTEGER NOT NULL,
+    title VARCHAR(30),
+    PRIMARY KEY (main_id, sub_id)
+);
+
+-- 11. UNIQUE 제약조건
+CREATE TABLE sample631 (
+    a INTEGER NOT NULL,
+    b INTEGER NOT NULL UNIQUE,
+    c VARCHAR(30)
+);
+
+-- 12. 인덱스 생성 및 삭제
+CREATE INDEX idx_sample620_no
+ON sample620 (id);
+
+DROP INDEX idx_sample620_no ON sample620;
+
+-- 13. 실행 계획 확인
+EXPLAIN SELECT * FROM sample620 WHERE id = 1;
+EXPLAIN SELECT * FROM sample620 WHERE id > 5;
+
+-- 14. VIEW 생성
+CREATE VIEW view_sample670 AS
+SELECT id, name, name
+FROM sample620;
+
+-- 15. VIEW 조회
+SELECT *
+FROM view_sample670
+WHERE id = 1;
+
+-- 16. VIEW 삭제
+DROP VIEW view_sample670;
