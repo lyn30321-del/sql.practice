@@ -1,0 +1,110 @@
+-- =====================================
+-- SQL Practice: UNION / JOIN / TRANSACTION
+-- =====================================
+
+-- =====================================
+-- 1. UNION (합집합)
+-- =====================================
+
+-- 중복 제거
+SELECT username FROM user_a
+UNION
+SELECT username FROM user_b;
+
+-- 중복 포함 (성능 더 좋음)
+SELECT username FROM user_a
+UNION ALL
+SELECT username FROM user_b;
+
+-- 주의: 컬럼 개수와 자료형이 같아야 함
+-- 주의: ORDER BY는 마지막에만 사용 가능
+
+SELECT username FROM user_a
+UNION
+SELECT username FROM user_b
+ORDER BY username;
+
+
+-- =====================================
+-- 2. JOIN (테이블 결합)
+-- =====================================
+
+-- INNER JOIN: 일치하는 데이터만
+SELECT *
+FROM customer c
+INNER JOIN purchase p
+ON c.customer_id = p.customer_id;
+
+-- LEFT JOIN: 왼쪽 테이블 기준 유지
+SELECT *
+FROM customer c
+LEFT JOIN purchase p
+ON c.customer_id = p.customer_id;
+
+-- RIGHT JOIN: 오른쪽 테이블 기준 유지
+SELECT *
+FROM customer c
+RIGHT JOIN purchase p
+ON c.customer_id = p.customer_id;
+
+-- 주의: ON 조건이 없으면 교차결합됨 (데이터 폭발)
+
+
+-- =====================================
+-- 3. JOIN vs UNION 차이 확인
+-- =====================================
+
+-- UNION → 세로 결합
+SELECT product_name FROM product_a
+UNION
+SELECT product_name FROM product_b;
+
+-- JOIN → 가로 결합
+SELECT *
+FROM product p
+INNER JOIN stock s
+ON p.product_id = s.product_id;
+
+
+-- =====================================
+-- 4. TRANSACTION (트랜잭션)
+-- =====================================
+
+-- 기본 구조
+START TRANSACTION;
+
+-- 주문 기록
+INSERT INTO orders (product_id, quantity)
+VALUES (5, 2);
+
+-- 재고 감소
+UPDATE inventory
+SET stock = stock - 2
+WHERE product_id = 5;
+
+-- 작업 확정
+COMMIT;
+
+-- =====================================
+-- ROLLBACK 예시
+-- =====================================
+
+START TRANSACTION;
+
+INSERT INTO orders (product_id, quantity)
+VALUES (3, 1);
+
+-- 문제 발생 시 취소
+ROLLBACK;
+
+
+-- =====================================
+
+-- UNION: 세로 결합 / 중복 제거
+-- UNION ALL: 세로 결합 / 중복 포함
+-- JOIN: 가로 결합
+-- INNER JOIN: 일치 데이터만
+-- LEFT JOIN: 왼쪽 기준 유지
+-- TRANSACTION: 작업을 하나로 묶음
+-- COMMIT: 확정
+-- ROLLBACK: 취소
